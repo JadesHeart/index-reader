@@ -11,9 +11,16 @@ class Connector:
         doc.connect()
         return doc
 
-    def getTableBorder(self):
+    def getTableBorder(self, self1):
+        try:
+            left_border = self1.left_border.text()
+            right_border = self1.right_borde.text()
+            categories_location = self1.categories_location.text()
+            last_string = self1.last_string.text()
+        except:
+            print("Fuuuuck")
+        return left_border, right_border, categories_location, last_string
 
-        return [leftLetter, leftNumber, rightLetter, rightNumber]
 
 def validateBorder(value):
     letter = value[0]
