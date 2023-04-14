@@ -16,10 +16,10 @@ class Connector:
             left_border = self1.left_border.text()
             right_border = self1.right_borde.text()
             categories_location = self1.categories_location.text()
-            last_string = self1.last_string.text()
+            name = self1.name.text()
         except:
             print("Fuuuuck")
-        return left_border, right_border, categories_location, last_string
+        return left_border, right_border, categories_location, name
 
 
 def validateBorder(value):

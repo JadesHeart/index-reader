@@ -8,13 +8,13 @@ class IndexingBlock:
     def __init__(self, connect):
         self.connect = connect
 
-    def count(self, leftLetter, rightLetter, user_input, last_string):
+    def count(self, leftLetter, rightLetter, user_input, name):
         print("jopa?")
         doc = self.connect.conectToDocument()
         print("jopa?1")
-        last_string = int(last_string)
+        last_string = int(rightLetter[1:])
         print(last_string)
-        currentMail = "B5"
+        currentMail = name
         numberString = int(currentMail[1:])
         sheet = doc.get_sheet(0)
         cvrtl = findBorder(leftLetter[0], rightLetter[0])
@@ -23,7 +23,7 @@ class IndexingBlock:
         user_input.replace(" ", "")
         for i in user_input:
             bdr_list.append(int(i))
-        bdr_list = [2, 2, 1, 1, 1, 2, 1, 2]
+        # bdr_list = [2, 2, 1, 1, 1, 2, 1, 2]
 
         mailComponent = {
             "mailPostName": "",
@@ -35,14 +35,16 @@ class IndexingBlock:
         while numberString < last_string:
             print("jopa?1")
             mouth += 1
-            print("Mouth now: " + str(mouth))
-            print()
-            print("AAAAAAAAAAAAAAAAAAAAAAAAAA")
+            print("Month now: " + str(mouth))
             oneComponentParam = []
             for i in bdr_list:
                 summ = 0
                 for j in range(i):
-                    summ += int(sheet[cvrtl[mouth - 1] + str(j + numberString)].value.strip().replace(",", ""))
+                    try:
+                        summ += int(sheet[cvrtl[mouth - 1] + str(j + numberString)].value.strip().replace(",", ""))
+                    except:
+                        summ += 0
+
                 print("Summ: " + str(summ))
                 print(numberString)
                 numberString += i
@@ -62,8 +64,8 @@ class IndexingBlock:
         return all_components
 
 
-def wrightComponent(all_components):
-    doc = pylocalc.Document('eleventest.ods')
+def wrightComponent(all_components,record_file_name):
+    doc = pylocalc.Document(record_file_name)
     doc.connect()
     sheet = doc[0]
     row = 0
@@ -79,6 +81,33 @@ def wrightComponent(all_components):
             row += 1
         print(i["mailPostName"])
     doc.save()
+
+
+def stick_month(all_components):
+    itogo = []
+    absolute = []
+    for j in range(len(all_components)):
+        for i in range(len(all_components[j]['parameters'])):  # vse kategori v yanvare
+            if (i + 3) == (len(all_components[j]['parameters'])):
+                a = all_components[j]['parameters'][i]
+                b = all_components[j]['parameters'][i + 1]
+                c = all_components[j]['parameters'][i + 2]
+                itogo.append(list(map(sum, zip(a, b, c))))
+                break
+            if (i == 0) | (i % 3 == 0):
+                a = all_components[j]['parameters'][i]
+                b = all_components[j]['parameters'][i + 1]
+                c = all_components[j]['parameters'][i + 2]
+                itogo.append(list(map(sum, zip(a, b, c))))
+            print("ITOGO")
+            print()
+        appended = {
+            "mailPostName": all_components[j]['mailPostName'],
+            'parameters': itogo
+        }
+        absolute.append(appended)
+        itogo = []
+    return absolute
 
 
 def findBorder(leftLetter, rightLetter):
