@@ -1,25 +1,16 @@
 import pylocalc
 
-import indexation_logic.connect
-
 
 class IndexingBlock:
 
-    def __init__(self, connect):
-        self.connect = connect
-
-    def count(self, leftLetter, rightLetter, user_input, name):
-        print("jopa?")
-        doc = self.connect.conectToDocument()
-        print("jopa?1")
+    def count(self, leftLetter, rightLetter, user_input, name, connected_doc):
+        doc = connected_doc
         last_string = int(rightLetter[1:])
-        print(last_string)
         currentMail = name
         numberString = int(currentMail[1:])
         sheet = doc.get_sheet(0)
         cvrtl = findBorder(leftLetter[0], rightLetter[0])
         bdr_list = []
-        print("jopa?3")
         user_input.replace(" ", "")
         for i in user_input:
             bdr_list.append(int(i))
@@ -29,13 +20,10 @@ class IndexingBlock:
             "mailPostName": "",
             "parameters": [[]],
         }
-        print("jopa?4")
         all_components = []
         mouth = 0
         while numberString < last_string:
-            print("jopa?1")
             mouth += 1
-            print("Month now: " + str(mouth))
             oneComponentParam = []
             for i in bdr_list:
                 summ = 0
@@ -60,27 +48,31 @@ class IndexingBlock:
                                  "parameters": [[]], }
                 mouth = 0
                 numberString += sum(bdr_list)
-        doc.close()
+        print("you sosalkaaaaaaa")
+        connected_doc.close()
         return all_components
 
 
-def wrightComponent(all_components,record_file_name):
-    doc = pylocalc.Document(record_file_name)
-    doc.connect()
-    sheet = doc[0]
-    row = 0
-    column = 0
-    for i in all_components:
-        sheet[column, row].value = i["mailPostName"]
-        for j in i["parameters"]:
-            print("List of component: " + str(j))
-            for z in j:
-                column += 1
-                sheet[column, row].value = z
-            column -= len(j)
-            row += 1
-        print(i["mailPostName"])
-    doc.save()
+def wrightComponent(all_components, doc):
+    try:
+        sheet = doc[0]
+        row = 0
+        column = 0
+        for i in all_components:
+            sheet[column, row].value = i["mailPostName"]
+            for j in i["parameters"]:
+                print("List of component: " + str(j))
+                for z in j:
+                    column += 1
+                    sheet[column, row].value = z
+                column -= len(j)
+                row += 1
+            print(i["mailPostName"])
+        doc.save()
+        doc.close()
+    except:
+        doc.close()
+        print("Can't open document")
 
 
 def stick_month(all_components):
@@ -99,8 +91,6 @@ def stick_month(all_components):
                 b = all_components[j]['parameters'][i + 1]
                 c = all_components[j]['parameters'][i + 2]
                 itogo.append(list(map(sum, zip(a, b, c))))
-            print("ITOGO")
-            print()
         appended = {
             "mailPostName": all_components[j]['mailPostName'],
             'parameters': itogo
